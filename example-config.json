@@ -1,0 +1,21 @@
+{
+    "discord_webhook": "https://discord.com/api/webhooks/",
+    "database": {
+        "host": "localhost",
+        "port": 5432,
+        "user": "user",
+        "password": "password",
+        "dbname": "wg"
+    },
+    "mikrotik": {
+        "host": "localhost",
+        "port": 22,
+        "user": "user",
+        "password": "password",
+        "interface": "wireguard"
+    },
+    "cron": {
+        "enabled": false,
+        "interval_minutes": 5
+    }
+}
