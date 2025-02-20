@@ -27,7 +27,7 @@ def add_wireguard_peer_to_mikrotik(name, public_key, allowed_ip, interface):
             password=MIKROTIK_CONFIG["password"]
         )
 
-        command = f'/interface/wireguard/peers/add name={name} public-key={public_key} allowed-address={allowed_ip} comment={name} interface={interface}'
+        command = f'/interface/wireguard/peers/add name={name} public-key="{public_key}" allowed-address={allowed_ip} interface={interface}'
         ssh.exec_command(command)
 
     except Exception as e:
