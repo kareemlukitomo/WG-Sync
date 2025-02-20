@@ -1,6 +1,6 @@
+import paramiko
 import json
 import os
-from mikrotik.login import connect_ssh
 
 # Load konfigurasi
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -13,9 +13,18 @@ MIKROTIK_CONFIG = config["mikrotik"]
 
 def get_wireguard_status():
     """Mengambil status WireGuard dari MikroTik melalui SSH"""
-    ssh = connect_ssh()
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     try:
+        print(f"🔄 Mengambil status WireGuard dari MikroTik {MIKROTIK_CONFIG['host']}...")
+        ssh.connect(
+            hostname=MIKROTIK_CONFIG["host"],
+            port=MIKROTIK_CONFIG["port"],
+            username=MIKROTIK_CONFIG["user"],
+            password=MIKROTIK_CONFIG["password"]
+        )
+
         command = f'/interface/wireguard/peers/print terse'
         stdin, stdout, stderr = ssh.exec_command(command)
         output = stdout.read().decode().strip()
@@ -36,6 +45,7 @@ def get_wireguard_status():
                 wg_peers.append(peer_info)
 
         return wg_peers
+
     except Exception as e:
         raise Exception(f"Gagal menghubungkan ke MikroTik: {e}")
     finally:
@@ -43,9 +53,18 @@ def get_wireguard_status():
 
 def get_total_peers(interface):
     """Mengambil total jumlah peers dari MikroTik melalui SSH untuk interface tertentu"""
-    ssh = connect_ssh()
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     try:
+        print(f"🔄 Mengambil total peers dari MikroTik {MIKROTIK_CONFIG['host']} untuk interface {interface}...")
+        ssh.connect(
+            hostname=MIKROTIK_CONFIG["host"],
+            port=MIKROTIK_CONFIG["port"],
+            username=MIKROTIK_CONFIG["user"],
+            password=MIKROTIK_CONFIG["password"]
+        )
+
         command = f'/interface/wireguard/peers/print terse where interface={interface}'
         stdin, stdout, stderr = ssh.exec_command(command)
         output = stdout.read().decode().strip()
@@ -58,6 +77,7 @@ def get_total_peers(interface):
 
         print(f"Total Peers: {total_peers}")
         return total_peers
+
     except Exception as e:
         raise Exception(f"Gagal menghubungkan ke MikroTik: {e}")
     finally:
