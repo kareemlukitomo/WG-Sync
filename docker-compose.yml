@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  wg-sync:
+    build: .
+    container_name: wg-sync
+    depends_on:
+      - postgres
+    environment:
+      - TZ=UTC
+      - RUN_OPTION=4  # 1=Sync, 2=Status, 3=Toggle Cron, 4=Exit
+    volumes:
+      - ./config.json:/app/config.json
+    restart: unless-stopped
+    networks:
+      - wg-network
+
+  postgres:
+    image: postgres:13-alpine
+    container_name: wg-postgres
+    environment:
+      POSTGRES_DB: wg
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - wg-network
+
+networks:
+  wg-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
